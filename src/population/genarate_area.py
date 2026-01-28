@@ -2,21 +2,22 @@ from src.domain.point import Point
 from src.domain.spot_location import CircularRingArea, Hotspot
 from src.computation.density import calc_circular_ring_density
 
+import numpy as np
 
-def genarate_circular_ring_area(hotspot: Hotspot, r: float) -> list[CircularRingArea]:
+
+def genarate_circular_ring_area(hotspot: Hotspot, width_ring: float) -> list[CircularRingArea]:
     """
     hotpot là điểm nóng trung tâm chứa thông tin số người sống quanh đó
-    r là bán kính tối đa số người sống quanh hotpot đó
+    width_ring là độ dày của các vùng vành khăn tinhs theo km
     """
     area_list: list[CircularRingArea] = []
-    width_ring = 1
     total_temp_pop = 0
     last_area_pop = hotspot.n_pop
 
-    for i in range(0,r, width_ring):
+    for i in np.arange(0,hotspot.r, width_ring):
         temp_pop = calc_circular_ring_density(i, width_ring)
         total_temp_pop += temp_pop
-        area = CircularRingArea(hotspot.o, temp_pop, i, width_ring )
+        area = CircularRingArea(hotspot.coords, temp_pop, i, width_ring )
         area_list.append(area)
 
     # Chuẩn hóa dân số trong các vùng vành khăn
@@ -32,10 +33,10 @@ if __name__ ==  "__main__":
 
     from src.data.load_spots import load_spots_config
 
-    hotspot_list, _ = load_spots_config(r'./config/config_location.yaml')
-    hotspot_data: dict = hotspot_list[0]
-    demo_hotspot: Hotspot = Hotspot(Point(hotspot_data['x'], hotspot_data['y']), hotspot_data['n'])
-    area_list: list[CircularRingArea] = genarate_circular_ring_area(demo_hotspot,5)
+    hotspot_list, _ = load_spots_config("./config/config_location.yaml")
+    
+    demo_hotspot: Hotspot = hotspot_list[0]
+    area_list: list[CircularRingArea] = genarate_circular_ring_area(demo_hotspot,0.1)
 
     for idx, area in enumerate(area_list):
         print(f" Vung co id {idx}: {area.n_pop} - ban kinh tu {area.r} -> {area.r + area.w}")

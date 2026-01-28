@@ -1,0 +1,2 @@
+# 1
+## Step1: Tạo ra loaction "home" cho mọi người dựa trên điểm đông dân cư ( Central Business District ) và mô hình mật độ gradient bão hòa p = p0 * e ^ (-b*x)  với x là khoảng cách từ điểm muốn xet mật độ đến tâm CBD
