@@ -33,7 +33,7 @@ if __name__ ==  "__main__":
 
     from src.data.load_spots import load_spots_config
 
-    hotspot_list, _ = load_spots_config("./config/config_location.yaml")
+    hotspot_list, _ = load_spots_config("./config/config.yaml")
     
     demo_hotspot: Hotspot = hotspot_list[0]
     area_list: list[CircularRingArea] = genarate_circular_ring_area(demo_hotspot,0.1)

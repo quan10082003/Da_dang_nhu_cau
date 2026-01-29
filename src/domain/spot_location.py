@@ -4,6 +4,7 @@ from src.domain.point import Point
 # Các địa điểm dân cư tập trung và số lượng dân cư trong đó,  r là km
 @dataclass 
 class Hotspot:
+    id: str
     coords: Point
     r: float
     n_pop: int  
@@ -18,8 +19,9 @@ class CircularRingArea:
     
 
 # các địa điểm làm việc tập trung và bán kính vùng đó,  r là km
-@dataclass
+@dataclass(frozen=True)
 class WorkSpot: 
+    id: str
     coords: Point
     r: float
     attractiveness: float

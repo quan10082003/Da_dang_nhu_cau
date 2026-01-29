@@ -1,0 +1,7 @@
+python -m src.population.genarate_person_around_hotspot
+python -m src.demand.generate_person_destination 
+python -m src.timedeparture.generate_hour_departure
+
+
+python -m src.write.generate_plan_csv
+python -m src.write.write_plan_xml

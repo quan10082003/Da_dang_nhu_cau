@@ -1,0 +1,34 @@
+hotspots:
+  - x: 0.0
+    y: 0.0
+    r: 0.1
+    n_pop: 500
+    id: "h1"
+
+  - x: 0.3
+    y: 0.3
+    r: 0.2
+    n_pop: 900
+    id: "h2"
+
+workspots:
+  - x: 0.1
+    y: 0.1
+    r: 0.05
+    id: "w1"
+    
+
+  - x: -0.1
+    y: -0.1
+    r: 0.3
+    id: "w2"
+
+peakhours:
+  am:
+  - hour: 9
+
+  pm:
+  - hour: 16
+  - hour: 18
+
+
