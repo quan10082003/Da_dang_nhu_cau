@@ -1,5 +1,5 @@
 from src.data.load_peakhours import load_peakhours
-from src.data.load_spots import load_spots_config
+from src.data.load_spots import load_spots_config, create_spots_list
 
 from src.population.genarate_person_around_hotspot import genarate_person_around_hotspot
 from src.demand.probability_destination import gravity_probability_model_fuc
@@ -11,11 +11,12 @@ import pandas as pd
 
 
 if __name__ == "__main__":
-
-    am_peakhours, pm_peakhours = load_peakhours(r".\config\config.yaml")
-    hotspots_list, workspots_list = load_spots_config(r".\config\config.yaml")
     output_plan_path = "data/processed/complete_plan.csv"
     output_OD_path = "data/processed/OD.csv"
+    output_spots_path = r"data\processed\spot_info.json"
+    am_peakhours, pm_peakhours = load_peakhours(r".\config\config.yaml")
+    hotspots_list, workspots_list = create_spots_list(output_spots_path)
+
 
     complete_df = pd.DataFrame()
     for hotspot in hotspots_list:
