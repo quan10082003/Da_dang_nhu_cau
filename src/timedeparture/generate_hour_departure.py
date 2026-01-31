@@ -17,11 +17,12 @@ def generate_trip_departure(person_OD_df: pd. DataFrame, name_trip: str, peak_ho
     return  person_OD_df
 
 if __name__ == "__main__":
-    from src.data.load_peakhours import load_peakhours
-    from src.data.load_spots import load_spots_config
+    from src.data.load_config import create_hotspots_from_region, load_config
 
-    am_peakhours, pm_peakhours = load_peakhours(r".\config\config.yaml")
-    hotspot_list, workspot_list = load_spots_config(r".\config\config.yaml")
+    scenario_cfg = load_config('./config/config_scenario.yaml')
+    hotspot_list, workspot_list = create_hotspots_from_region(config_path = './config/config_scenario.yaml', beta_gravity_model = 0.5)
+    am_peakhours = scenario_cfg.peakhours.am.hour
+    pm_peakhours = scenario_cfg.peakhours.pm.hour
 
     input_path = "data/interim/step2_person_mapping_destination.csv"
     output_path = "data/interim/step3_adding_departure_time.csv"

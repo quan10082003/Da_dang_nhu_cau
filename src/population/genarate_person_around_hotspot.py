@@ -1,7 +1,5 @@
 from src.domain.point import Point
 from src.domain.spot_location import CircularRingArea, Hotspot
-from src.computation.density import calc_circular_ring_density
-from dataclasses import asdict
 from src.population.genarate_area import genarate_circular_ring_area
 
 import random
@@ -21,11 +19,11 @@ def gen_random_location_in_area(area: CircularRingArea) -> list[Point]:
 
     return points_list
 
-def genarate_person_around_hotspot(hotspot: Hotspot, width_ring: float) -> pd.DataFrame:
+def genarate_person_around_hotspot(hotspot: Hotspot, width_ring: float, p0: float, beta_gradient_method: float) -> pd.DataFrame:
     df = pd.DataFrame()
     id_hotspot = hotspot.id
 
-    area_list: list[CircularRingArea] = genarate_circular_ring_area(hotspot=hotspot, width_ring = width_ring)
+    area_list: list[CircularRingArea] = genarate_circular_ring_area(hotspot=hotspot, width_ring = width_ring, p0=p0, beta_gradient_method=beta_gradient_method)
     for area in area_list:
         person_distribute_list: list[Point] = gen_random_location_in_area(area=area)
         person_distribute_dict: list[dict] =  [obj.__dict__ for obj in person_distribute_list]
@@ -43,11 +41,10 @@ def genarate_person_around_hotspot(hotspot: Hotspot, width_ring: float) -> pd.Da
 
 if __name__ ==  "__main__":
 
-    from src.data.load_spots import load_spots_config
+    from src.data.load_config import create_hotspots_from_region
+    hotspot_list, workspot_list = create_hotspots_from_region(config_path = './config/config_scenario.yaml', beta_gravity_model = 0.5)
 
-    hotspot_list, _ = load_spots_config(r'./config/config.yaml')
-    df: pd.DataFrame = genarate_person_around_hotspot(hotspot=hotspot_list[0], width_ring= 0.01)
-
+    df: pd.DataFrame = genarate_person_around_hotspot(hotspot=hotspot_list[0], width_ring= 0.01, p0=100.0, beta_gradient_method=0.5)
     output_path = "data/interim/step1_person_location.csv"
     df.to_csv(output_path, sep=";")
         

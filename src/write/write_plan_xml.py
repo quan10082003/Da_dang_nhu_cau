@@ -1,6 +1,5 @@
 
 import pandas as pd
-import lxml
 import os
 
 def write_person(f, person_id, x_home, y_home, x_work, y_work, home_work_dep, work_home_dep):
@@ -43,8 +42,8 @@ def write_PlanXML(complete_person_plan_csv_path: str, file_path: str):
 
 
 if __name__ == "__main__":
-    input_plan_csv = "data\processed\complete_plan.csv"
-    output_plan_path = "data/processed/plan.xml"
+    input_plan_csv = r"data\processed\complete_plan.csv"
+    output_plan_path = r"data\processed\plan.xml"
 
 
     write_PlanXML(input_plan_csv,output_plan_path)

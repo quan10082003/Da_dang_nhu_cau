@@ -1,7 +1,5 @@
 from src.domain.spot_location import WorkSpot, Hotspot
 from src.computation.distance import calc_km_distance
-from src.domain.point import Point
-from src.computation.attractive import calc_attractiveness_of_workspot
 
 def gravity_probability_model_fuc(hotspot : Hotspot, workspot_list: list[WorkSpot]) -> dict[WorkSpot, float] :
     """
@@ -26,8 +24,9 @@ def gravity_probability_model_fuc(hotspot : Hotspot, workspot_list: list[WorkSpo
     return probability_map
 
 if __name__ == "__main__":
-    from src.data.load_spots import load_spots_config
-    hotspot_list, workspot_list = load_spots_config("./config/config.yaml")
+    from src.data.load_config import create_hotspots_from_region
+    hotspot_list, workspot_list = create_hotspots_from_region(config_path = './config/config_scenario.yaml', beta_gravity_model = 0.5)
+
     for spot in hotspot_list:
         prob_map = gravity_probability_model_fuc(spot, workspot_list=workspot_list)
         print(prob_map)

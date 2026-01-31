@@ -1,0 +1,17 @@
+interim:
+  population: "data/interim/step1_person_location.csv"
+  demand: "data/interim/step2_person_mapping_destination.csv"
+  departure: "data/interim/step3_adding_departure_time.csv"
+
+processed:
+  plan_xml: "data/processed/plan.xml"
+  OD: "data/processed/OD.csv"
+  spot: "data/processed/spot.csv"
+  plan_csv: "data/processed/plan.csv"
+  
+simple_scenario:
+  network: "data/simple_network/network.xml"
+
+
+
+

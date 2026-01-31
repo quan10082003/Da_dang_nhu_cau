@@ -1,0 +1,56 @@
+peakhours:
+  am: 
+    hour: [9]
+    std_normal_distribute: 1
+  
+  pm: 
+    hour: [16,18]
+    std_normal_distribute: 1
+
+params:
+  normal_distribution:
+    mean: 15
+    std: 5
+
+  saturation_gradient_method:
+    p0: 100
+    beta: 1
+
+  gravity_probability_model:
+    attractiveness:
+      beta: 0.5
+
+  circlering_area:
+    width_ring: 0.01
+
+
+hotspots_region:
+  - prefix_region_id: HS1
+    object_type: hotspot
+    subregions_number: 10
+    region_type: circle
+    center_region: 
+      x: 454.031
+      y: 5734.395
+    min_radian: 0.1
+    max_radian: 0.5
+    population_number: 5000
+    radius_region: 1
+
+
+    
+
+workspots_region:
+  - prefix_region_id: WS1
+    object_type: workspot
+    subregions_number: 10
+    region_type: rectangle
+    center_region: 
+      x: 454.031
+      y: 5734.395
+    min_radian: 0.1
+    max_radian: 0.5
+    width: 3
+    height: 4
+
+    
