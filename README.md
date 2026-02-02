@@ -1,98 +1,125 @@
-# 🏙️ MATSim Demand Generator - Dự án Tạo Nhu cầu Giao thông Giả định
+# 🚌 Dự án Phát Sinh Nhu Cầu Đi Lại (MATSim Demand Generator)
 
-Chào mừng bạn đến với dự án sinh dữ liệu plan cho MATSim. Tài liệu này được thiết kế để giúp bạn không chỉ chạy được code mà còn hiểu được **tư duy cốt lõi (logic flow)** đằng sau việc tạo ra các chuyến đi giả lập.
+Chào mừng! Đây là bộ công cụ giúp bạn tạo ra file `plan.xml` cho mô phỏng MATSim một cách tự động. 
 
----
-
-## 🧠 1. Tư duy Thiết kế (Mindset)
-Để mô phỏng giao thông, câu hỏi lớn nhất là: **"Hàng ngàn người dân này đang đi đâu và tại sao?"**. Thay vì tạo dữ liệu ngẫu nhiên vô nghĩa, dự án này áp dụng các nguyên lý quy hoạch đô thị và toán học để sinh dữ liệu sát thực tế:
-
-### Bước 1: Định hình Không gian (Spatial Logic)
-Chúng ta không rải dân cư đều khắp bản đồ. Thay vào đó, ta định nghĩa các vùng tập trung:
--   **Hotspots (Vùng Dân cư)**: Nơi tập trung đông người sinh sống (ví dụ: khu chung cư, xóm dân cư).
--   **Workspots (Vùng Việc làm)**: Nơi tập trung nhu cầu lao động (ví dụ: khu công nghiệp, tòa nhà văn phòng).
-
-### Bước 2: Tính toán "Sức hút" (Attractiveness)
-Tại sao một khu vực việc làm lại thu hút lao động? Dự án này giả định:
-> *Một Workspot hấp dẫn là nơi nằm ở vị trí đắc địa, gần các nguồn cung lao động (Hotspots) có mật độ dân số cao.*
--   **Thuật toán**: Sử dụng hàm mũ `exp` để tính điểm hấp dẫn. Càng gần khu đông dân, điểm càng cao.
-
-### Bước 3: Mô hình Trọng lực (Gravity Model)
-Khi một người (Agent) chọn nơi làm việc, họ sẽ cân nhắc:
-1.  Độ hấp dẫn của nơi làm việc (Thuận).
-2.  Khoảng cách từ nhà đến nơi làm việc (Nghịch).
-> *Kết quả*: Người ta có xu hướng chọn việc làm ở nơi hấp dẫn nhưng không quá xa nhà. Code sử dụng công thức `Xác suất = Attractiveness / Distance` để gán đích đến cho từng người.
-
-### Bước 4: Nhịp sống Đô thị (Temporal Logic)
-Không ai đi làm vào lúc 3 giờ sáng. Hệ thống sẽ gán giờ xuất phát dựa trên **Giờ cao điểm (Peak Hours)**:
--   Sáng: Đi từ Nhà -> Chỗ làm.
--   Chiều: Đi từ Chỗ làm -> Nhà.
+Tài liệu này được thiết kế theo dạng **Quy trình từng bước (Step-by-Step Flow)** để người mới bắt đầu có thể áp dụng ngay lập tức.
 
 ---
 
-## 🌊 2. Luồng Dữ liệu (Data Flow)
+> 🚨 **CẢNH BÁO QUAN TRỌNG NHẤT: ĐƠN VỊ TÍNH** 🚨
+>
+> Trước khi làm bất cứ điều gì, hãy khắc cốt ghi tâm điều này:
+> Trong toàn bộ dự án (đặc biệt là file `config_scenario.yaml`), **TẤT CẢ** các đơn vị đo lường khoảng cách và tọa độ đều là **KILOMET (KM)**.
+>
+> *   ✅ `x: 10`, `y: 20` $\rightarrow$ Tọa độ (10km, 20km).
+> *   ✅ `radius: 1.5` $\rightarrow$ Bán kính 1.5 km.
+> *   ❌ **SAI LẦM PHỔ BIẾN**: Nhập `radius: 1000` (ý là 1000m) $\rightarrow$ Máy tính sẽ hiểu là bán kính **1000 KM** (to bằng cả một quốc gia)!
 
-Quy trình để code biến các con số cấu hình thành file `plan.xml` hoàn chỉnh:
+---
 
-```mermaid
-graph TD
-    A[Cấu hình Input] -->|Tọa độ, Bán kính, Dân số| B(Sinh Vùng Hotspot/Workspot)
-    B -->|Tạo Agent| C(Quần thể Dân cư cơ sở)
-    B & C -->|Tính toán| D{Mô hình Trọng lực}
-    D -->|Gán đích đến| E[Quyết định lộ trình O-D]
-    E -->|Gán thời gian| F[Lịch trình hoàn chỉnh]
-    F -->|Export| G[OUTPUT: plan.xml / OD.csv]
+## 👣 QUY TRÌNH THỰC HIỆN CHUẨN (4 BƯỚC)
+
+Để chạy dự án thành công, bạn hãy đi theo đúng 4 bước tuần tự dưới đây:
+
+### 🟢 Bước 1: Cài đặt môi trường (Setup)
+Bạn chỉ cần làm bước này một lần duy nhất khi mới tải code về.
+
+1.  **Cài Python**: Đảm bảo máy có [Python 3.10+](https://www.python.org/downloads/). Kiểm tra bằng lệnh `python --version` trong Terminal (hoặc CMD).
+2.  **Cài thư viện**: Tại thư mục chứa file này, chạy lệnh:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+### 🟡 Bước 2: Cấu hình kịch bản (Configuration)
+Đây là bước bạn sẽ làm việc nhiều nhất. Hãy mở file **`config/config_scenario.yaml`**.
+
+#### 2.1. Cấu hình Thời gian (`peakhours`)
+Quyết định giờ cao điểm mà mọi người sẽ đổ ra đường.
+```yaml
+peakhours:
+  am: 
+    hour: [9, 10] # Giờ cao điểm sáng (tập trung lúc 9h và 10h)
+  pm: 
+    hour: [17]    # Giờ cao điểm chiều (tập trung lúc 17h)
 ```
 
-1.  **Input**: Định nghĩa "Vùng X ở đâu, bao nhiêu dân?".
-2.  **Scatter**: Rải ngẫu nhiên tọa độ nhà và chỗ làm trong các vùng đã định nghĩa.
-3.  **Ranking**: Mỗi người dân sẽ "chấm điểm" tất cả các chỗ làm và chọn một nơi dựa trên xác suất.
-4.  **Scheduling**: Gán giờ khởi hành ngẫu nhiên xoay quanh giờ cao điểm.
-5.  **Output**: Ghi ra file XML chuẩn MATSim.
+#### 2.2. Cấu hình Không gian (`hotspots` & `workspots`)
+Chúng ta sử dụng tư duy **"Vùng mẹ - Điểm con"** để tạo dữ liệu sinh động.
 
----
+*   **Vùng mẹ (Region)**: Là một khu vực lớn (Ví dụ: Quận Cầu Giấy). Được định nghĩa bằng tâm (`center_region`) và bán kính (`radius_region`).
+*   **Điểm con (Subregions)**: Máy tính sẽ chọn ngẫu nhiên các điểm tụ bên trong Vùng mẹ để làm các xóm dân cư, thay vì rải đều tăm tắp.
 
-## 🔑 3. Các Thành phần Quan trọng
-Để tạo ra một file Plan chất lượng, bạn cần kiểm soát 3 file chính trong mã nguồn:
-
-1.  **`src/Main.py`** (Bộ não trung tâm):
-    -   Tại đây bạn cấu hình danh sách `hotspot_configs` (Nguồn) và `workspot_configs` (Đích).
-    -   *Quan trọng*: Bạn quyết định hình dáng vùng (`circle`/`rectangle`) và quy mô dân số (`pop`) tại đây.
-
-2.  **`config/config.yaml`** (Đồng hồ thời gian):
-    -   Quy định khung giờ cao điểm. Ví dụ: Rải chuyến đi tập trung vào 7h-9h sáng.
-
-3.  **`src/demand/probability_destination.py`** (Trọng tài):
-    -   Chứa logic quyết định "Ai đi đâu". Nếu bạn muốn thay đổi hành vi chọn việc (ví dụ: người ta thích đi làm xa hơn), hãy sửa công thức tại đây.
-
----
-
-## 🚀 4. Hướng dẫn Sử dụng (Quick Start)
-
-### Cài đặt
-Cần Python 3.10+. Chạy lệnh sau để cài thư viện:
-```bash
-pip install -r requirements.txt
+```yaml
+hotspots_region:
+  - prefix_region_id: "Q1"      # Tên vùng
+    object_type: "hotspot"      # Loại: Nhà (hotspot)
+    subregions_number: 10       # Tạo ra 10 'xóm' dân cư trong vùng này
+    region_type: "circle"       # Hình tròn
+    center_region: {x: 5, y: 10} # Tọa độ tâm (KM)
+    radius_region: 2            # Bán kính 2 KM (Nhớ chú ý đơn vị!)
+    population_number: 5000     # Tổng 5000 dân chia cho 10 xóm
 ```
 
-### Chạy Chương trình
-Cách an toàn nhất để chạy (tránh lỗi import) là đứng từ thư mục gốc và gọi module:
+### 🟠 Bước 3: Chạy mô phỏng (Execution)
+Sau khi đã lưu file config, bạn chạy lệnh sau để sinh dữ liệu.
+
+📍 **Cách chạy đúng:**
+Mở Terminal tại thư mục gốc dự án (nơi chứa file README này) và gõ:
 
 ```bash
-# Windows / Linux / Mac
 python -m src.Main
 ```
 
-### Kết quả (Output)
-Sau khi chạy xong, hãy kiểm tra thư mục `data/processed/`:
--   `plan.xml`: File quan trọng nhất, dùng để nạp vào MATSim.
--   `OD.csv`: Bảng thống kê luồng di chuyển (để vẽ biểu đồ hoặc phân tích trên Excel).
--   `complete_plan.csv`: Danh sách chi tiết từng người và lộ trình của họ.
+> ⚠️ **Lưu ý:** Tuyệt đối không chạy kiểu `python src/Main.py` (sẽ lỗi import).
+
+### 🔴 Bước 4: Kiểm tra kết quả (Output)
+Nếu chạy thành công, dữ liệu sẽ nằm trong thư mục **`data/processed/`**:
+
+1.  **`plan.xml`**: 🔥 **Quan trọng nhất**. Đây là file chứa toàn bộ lịch trình đi lại của dân cư. Bạn dùng file này để nạp vào MATSim.
+2.  **`OD.csv`**: File Excel thống kê nhu cầu đi lại (Từ vùng nào -> Đến vùng nào, số lượng bao nhiêu). Dùng để vẽ biểu đồ báo cáo.
+3.  **`spot.csv`**: Chứa tọa độ chính xác của các Hotspot/Workspot đã tạo. Bạn nên mở file này lên (hoặc import vào QGIS/Google Earth) để kiểm tra xem vị trí có đúng ý đồ không.
 
 ---
 
-## 📝 Ghi chú Kỹ thuật (Pro Tips)
--   **Tùy chỉnh Logic**: Hiện tại logic "độ hấp dẫn" đang nằm ở `src/computation/attractive.py`. Bạn có thể sửa hàm `calc_attractiveness_of_workspot` để thêm các yếu tố khác (ví dụ: lương cao, gần trung tâm thương mại...).
--   **Hiệu năng**: Nếu mô phỏng với số lượng dân cực lớn (>100k agent), quá trình tính toán Gravity Model có thể chậm. Hãy cân nhắc tối ưu vòng lặp trong `probability_destination.py`.
+## 🧠 LUỒNG XỬ LÝ DỮ LIỆU (LOGIC FLOW)
 
-*© 2026 - Dự án v2_Tao_Plan_Da_Dang_Nhu_Cau*
+Nếu bạn muốn hiểu code chạy ngầm như thế nào, đây là sơ đồ tư duy:
+
+```mermaid
+graph TD
+    Start[Bắt đầu] --> LoadConfig[1. Đọc Config (File .yaml)]
+    
+    subgraph Giai_doan_1_Sinh_Khong_Gian
+    LoadConfig --> Region[Tạo Vùng Mẹ]
+    Region --> SubRegion[Sinh ngẫu nhiên các Điểm Con (Xóm/Tòa nhà)]
+    SubRegion --> Pop[Rải dân số vào các Hotspot]
+    end
+    
+    subgraph Giai_doan_2_Ghep_Cap [Logic Quan Trọng Nhất]
+    Pop --> CalAttr[Tính độ hấp dẫn của Workspot]
+    CalAttr --> Gravity[2. Chạy Mô Hình Trọng Lực]
+    Gravity --> Match[Ghép Người -> Nơi làm phù hợp]
+    end
+    
+    subgraph Giai_doan_3_Lap_Lich
+    Match --> Time[3. Gán giờ xuất phát (theo Peak Hours)]
+    Time --> Plan[Tạo hành trình: Nhà -> Chỗ làm -> Nhà]
+    end
+    
+    Plan --> Output[4. Xuất file plan.xml & OD.csv]
+```
+
+**Giải thích logic "Ghép cặp":**
+Khi một người dân chọn nơi làm việc, họ sẽ cân nhắc 2 yếu tố:
+1.  **Khoảng cách**: Ưu tiên nơi gần nhà (nghịch đảo khoảng cách).
+2.  **Độ hấp dẫn**: Ưu tiên nơi sầm uất, gần các khu dân cư đông đúc khác.
+$\rightarrow$ Đây chính là bản chất của **Mô hình Trọng lực (Gravity Model)** được áp dụng trong code.
+
+---
+
+## ❓ Xử lý sự cố thường gặp
+
+*   **Lỗi**: `ModuleNotFoundError: No module named 'src'`
+    *   👉 **Sửa**: Bạn đang chạy sai lệnh. Hãy dùng `python -m src.Main`.
+*   **Vấn đề**: File output trống trơn hoặc tọa độ lạ?
+    *   👉 **Sửa**: Kiểm tra lại đơn vị trong config. Có thể bạn đã nhập mét thay vì KM.
