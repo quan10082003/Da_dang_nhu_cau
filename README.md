@@ -87,26 +87,26 @@ Nếu bạn muốn hiểu code chạy ngầm như thế nào, đây là sơ đ�
 
 ```mermaid
 graph TD
-    Start[Bắt đầu] --> LoadConfig[1. Đọc Config (File .yaml)]
+    Start[Bắt đầu] --> LoadConfig["1. Đọc Config (File .yaml)"]
     
     subgraph Giai_doan_1_Sinh_Khong_Gian
     LoadConfig --> Region[Tạo Vùng Mẹ]
-    Region --> SubRegion[Sinh ngẫu nhiên các Điểm Con (Xóm/Tòa nhà)]
+    Region --> SubRegion["Sinh ngẫu nhiên các Điểm Con (Xóm/Tòa nhà)"]
     SubRegion --> Pop[Rải dân số vào các Hotspot]
     end
     
-    subgraph Giai_doan_2_Ghep_Cap [Logic Quan Trọng Nhất]
+    subgraph Giai_doan_2_Ghep_Cap ["Logic Quan Trọng Nhất"]
     Pop --> CalAttr[Tính độ hấp dẫn của Workspot]
-    CalAttr --> Gravity[2. Chạy Mô Hình Trọng Lực]
-    Gravity --> Match[Ghép Người -> Nơi làm phù hợp]
+    CalAttr --> Gravity["2. Chạy Mô Hình Trọng Lực"]
+    Gravity --> Match["Ghép Người -> Nơi làm phù hợp"]
     end
     
     subgraph Giai_doan_3_Lap_Lich
-    Match --> Time[3. Gán giờ xuất phát (theo Peak Hours)]
-    Time --> Plan[Tạo hành trình: Nhà -> Chỗ làm -> Nhà]
+    Match --> Time["3. Gán giờ xuất phát (theo Peak Hours)"]
+    Time --> Plan["Tạo hành trình: Nhà -> Chỗ làm -> Nhà"]
     end
     
-    Plan --> Output[4. Xuất file plan.xml & OD.csv]
+    Plan --> Output["4. Xuất file plan.xml & OD.csv"]
 ```
 
 **Giải thích logic "Ghép cặp":**
