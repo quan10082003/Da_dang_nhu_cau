@@ -30,8 +30,8 @@ if __name__ == "__main__":
         probability_map = gravity_probability_model_fuc(hotspot= hotspot, workspot_list=workspots_list)
         df2 = genarate_person_destination(df1, probability_map )
 
-        df3 = generate_trip_departure(person_OD_df=df2, name_trip= "home-work", peak_hours_list= scenariocfg.peakhours.am.hour, sigma=scenariocfg.params.normal_distribution.std)
-        df4 = generate_trip_departure(person_OD_df=df3, name_trip= "work-home", peak_hours_list= scenariocfg.peakhours.pm.hour, sigma=scenariocfg.params.normal_distribution.std)
+        df3 = generate_trip_departure(person_OD_df=df2, name_trip= "home-work", peak_hours_list= scenariocfg.peakhours.am.hour, sigma=scenariocfg.peakhours.am.std_normal_distribute)
+        df4 = generate_trip_departure(person_OD_df=df3, name_trip= "work-home", peak_hours_list= scenariocfg.peakhours.pm.hour, sigma=scenariocfg.peakhours.pm.std_normal_distribute)
 
         complete_df = pd.concat([complete_df, df4], ignore_index = True)
 
